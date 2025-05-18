@@ -160,14 +160,14 @@ const OrderDetails = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Back to My Orders
+                    My Orders
                 </Link>
             </div>
         );
     }
 
     return (
-        <div className="mt-16 pb-16 max-w-4xl mx-auto">
+        <div className="mt-16 pb-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Cancel Confirmation Dialog */}
             {showCancelDialog && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
@@ -199,13 +199,13 @@ const OrderDetails = () => {
                     <img src={assets.arrow_right_icon_colored} alt='arrow' className='group-hover:translate-x-1 transition' />
                     Back to My Orders
                 </Link>
-                <div className="mt-4 md:mt-0">
+                <div>
                     <span className="text-gray-500">Order Number: </span>
                     <span className="font-medium">{order.orderNumber || `#${order._id.substring(order._id.length - 6)}`}</span>
                 </div>
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-5 mb-6">
+            <div className="border border-gray-300 rounded-lg p-4 sm:p-5 mb-6">
                 <div className="flex justify-between items-start mb-4">
                     <div>
                         <h2 className="text-xl font-medium">Order Status</h2>
@@ -220,7 +220,7 @@ const OrderDetails = () => {
 
                         <div className="mt-4">
                             <p className="text-gray-500 font-medium">Payment Details</p>
-                            <div className="flex flex-wrap gap-x-4 mt-1">
+                            <div className="flex flex-col mt-1">
                                 <div className="flex items-center">
                                     <span className="text-gray-600 mr-2">Payment:</span>
                                     <span className="font-medium">{order.paymentMethod}</span>
@@ -287,7 +287,7 @@ const OrderDetails = () => {
                 )}
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-5 mb-6">
+            <div className="border border-gray-300 rounded-lg p-4 sm:p-5 mb-6">
                 <h2 className="text-xl font-medium mb-4">Delivery Address</h2>
                 <div className="text-gray-600">
                     <p className="font-medium">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
@@ -304,7 +304,7 @@ const OrderDetails = () => {
 
                 {order.orderItems.map((item, index) => (
                     <div key={index} className={`flex flex-col md:flex-row md:items-center justify-between py-4 ${index !== order.orderItems.length - 1 ? 'border-b border-gray-200' : ''}`}>
-                        <div className="flex items-center mb-3 md:mb-0">
+                        <div className="flex items-center mb-3 md:mb-0 flex-grow">
                             <div className="bg-gray-100 p-3 rounded-md">
                                 <img
                                     src={item.image}
@@ -312,7 +312,7 @@ const OrderDetails = () => {
                                     className="w-16 h-16 object-cover"
                                 />
                             </div>
-                            <div className="ml-4">
+                            <div className="ml-4 flex-grow">
                                 <h3 className="font-medium">{item.name}</h3>
                                 <p className="text-gray-500">Quantity: {item.quantity}</p>
                                 <p className="text-gray-500">{currency}{item.price.toFixed(2)} each</p>
@@ -325,7 +325,7 @@ const OrderDetails = () => {
                     </div>
                 ))}
 
-                <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
                     <div className="flex justify-between text-gray-500">
                         <span>Subtotal</span>
                         <span>{currency}{order.itemsPrice.toFixed(2)}</span>
