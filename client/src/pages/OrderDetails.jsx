@@ -205,11 +205,11 @@ const OrderDetails = () => {
                 </div>
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-4 sm:p-5 mb-6">
+            <div className="border border-gray-300 rounded-lg p-5 mb-6">
                 <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
 
                     <div>
-                        <h2 className="text-xl font-medium">Order Status</h2>
+                        <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Status</h2>
                         <div className="flex justify-between items-center mb-4 w-full">
                             <div className="text-left">
                                 <p className="text-gray-500">Order Date</p>
@@ -292,8 +292,8 @@ const OrderDetails = () => {
                 )}
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-4 sm:p-5 mb-6">
-                <h2 className="text-xl font-medium mb-4">Delivery Address</h2>
+            <div className="border border-gray-300 rounded-lg p-5">
+                <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Delivery Address</h2>
                 <div className="text-gray-600">
                     <p className="font-medium">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
                     <p>{order.shippingAddress.addressLine1}</p>
@@ -305,7 +305,7 @@ const OrderDetails = () => {
             </div>
 
             <div className="border border-gray-300 rounded-lg p-5">
-                <h2 className="text-xl font-medium mb-4">Order Items</h2>
+                <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Items</h2>
 
                 {order.orderItems.map((item, index) => (
                     <div key={index} className={`flex flex-col md:flex-row md:items-center justify-between py-4 ${index !== order.orderItems.length - 1 ? 'border-b border-gray-200' : ''}`}>
