@@ -206,8 +206,8 @@ const OrderDetails = () => {
             </div>
 
             <div className="border border-gray-300 rounded-lg p-5 mb-6">
+                <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Status</h2>
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                    <h2 className="text-xl font-medium pb-2 mb-4 md:mb-0 md:border-b-0 md:pb-0">Order Status</h2>
                     <div className="flex flex-wrap gap-2 mt-2 md:mt-0 md:justify-end">
                         <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
                             {order.status}
