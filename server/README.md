@@ -13,7 +13,16 @@ npm install
 ```
 # Required Variables
 # MongoDB Connection String
-MONGODB_URI="mongodb://localhost:27017/grocery_shop"
+MONGODB_URI="your_mongodb_connection_string"
+
+# Frontend URl Connection
+VITE_CLIENT_URL="http://localhost:5173"
+
+# Backend URL Connection
+NODE_ENV="development"
+
+# Server Port
+PORT=4000
 
 # Clerk Authentication
 CLERK_SECRET_KEY="your_clerk_secret_key"
@@ -21,19 +30,12 @@ CLERK_SECRET_KEY="your_clerk_secret_key"
 # JWT Secret for Admin Authentication
 JWT_SECRET="your_jwt_secret_key"
 
-# Optional Variables
-# Server Port (defaults to 4000)
-PORT=4000
 
 # Cloudinary Configuration for Image Storage
 CLOUDINARY_CLOUD_NAME="your_cloud_name"
 CLOUDINARY_API_KEY="your_api_key"
 CLOUDINARY_API_SECRET="your_api_secret"
 
-# Admin Credentials (used for initial setup)
-ADMIN_EMAIL="admin@example.com"
-ADMIN_PASSWORD="secure_password"
-```
 
 ## Running the Server
 

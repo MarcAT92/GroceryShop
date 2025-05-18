@@ -12,14 +12,14 @@ npm install
 2. Create a `.env` file in the client directory with the following variables:
 
 ```
-# API URL - URL of your backend server
-VITE_API_URL="http://localhost:4000/api"
+# Currency symbol to use throughout the app (e.g., $, €)
+VITE_CURRENCY="$"
 
 # Clerk Authentication - Get these from your Clerk dashboard
 VITE_CLERK_PUBLISHABLE_KEY="your_clerk_publishable_key"
 
-# Currency symbol to use throughout the app (optional, defaults to $)
-VITE_CURRENCY="$"
+# API URL - URL of your backend server
+VITE_API_URL="http://localhost:4000/api"
 ```
 
 ## Running the Client
