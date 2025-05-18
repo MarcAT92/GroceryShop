@@ -194,12 +194,12 @@ const OrderDetails = () => {
                 </div>
             )}
 
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col items-start md:flex-row md:items-center justify-between mb-6">
                 <Link to="/my-orders" className="group cursor-pointer flex items-center gap-2 text-primary font-medium">
                     <img src={assets.arrow_right_icon_colored} alt='arrow' className='group-hover:translate-x-1 transition' />
                     Back to My Orders
                 </Link>
-                <div>
+                <div className="mt-4 md:mt-0">
                     <span className="text-gray-500">Order Number: </span>
                     <span className="font-medium">{order.orderNumber || `#${order._id.substring(order._id.length - 6)}`}</span>
                 </div>
@@ -220,7 +220,7 @@ const OrderDetails = () => {
 
                         <div className="mt-4">
                             <p className="text-gray-500 font-medium">Payment Details</p>
-                            <div className="flex flex-col mt-1">
+                            <div className="flex flex-wrap gap-x-4 mt-1">
                                 <div className="flex items-center">
                                     <span className="text-gray-600 mr-2">Payment:</span>
                                     <span className="font-medium">{order.paymentMethod}</span>
