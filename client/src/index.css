@@ -10,6 +10,7 @@
 @theme {
   --color-primary: #4fbf8b;
   --color-primary-dull: #44ae7c;
+  --color-dark-green: #013220;
 }
 
 /* Prevent layout shifts during navigation */
