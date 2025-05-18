@@ -374,7 +374,7 @@ const Cart = () => {
                             className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
                             value={paymentOptions}
                         >
-                            <option value="Cash on Delivery">On Delivery/Pickup</option>
+                            <option value="Cash on Delivery">Cash or Card</option>
                             <option value="Online Payment">Online</option>
                         </select>
                     </div>
