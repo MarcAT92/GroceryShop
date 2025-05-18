@@ -216,12 +216,12 @@ const OrderDetails = () => {
                             {order.isPaid ? 'Paid' : 'Payment Pending'}
                         </span>
                     </div>
-                    <div className="flex flex-row md:flex-row md:items-center md:justify-end mt-4 md:mt-0">
+                    <div className="flex flex-row md:flex-row md:items-center md:justify-end mt-4 md:mt-0 gap-x-2">
                         <div className="text-right">
                             <p className="text-gray-500">Order Date</p>
                             <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
-                        <div className="text-right mt-1 md:mt-0 ml-2 md:ml-4">
+                        <div className="text-right mt-1 md:mt-0 md:ml-4">
                             <p className="text-gray-500">Order Time</p>
                             <p className="font-medium">{new Date(order.createdAt).toLocaleTimeString()}</p>
                         </div>
