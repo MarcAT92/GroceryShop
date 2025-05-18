@@ -206,47 +206,46 @@ const OrderDetails = () => {
             </div>
 
             <div className="border border-gray-300 rounded-lg p-5 mb-6">
-                <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <h2 className="text-xl font-medium pb-2 mb-4 md:mb-0 md:border-b-0 md:pb-0">Order Status</h2>
+                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0 md:justify-end">
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                            {order.status}
+                        </span>
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.isPaid ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
+                            {order.isPaid ? 'Paid' : 'Payment Pending'}
+                        </span>
+                    </div>
+                </div>
 
-                    <div>
-                        <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Status</h2>
-                        <div className="flex justify-between items-center mb-4 w-full">
-                            <div className="text-left">
-                                <p className="text-gray-500">Order Date</p>
-                                <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-gray-500">Order Time</p>
-                                <p className="font-medium">{new Date(order.createdAt).toLocaleTimeString()}</p>
-                            </div>
+                <div>
+                    <div className="flex justify-between items-center mb-4 w-full">
+                        <div className="text-left">
+                            <p className="text-gray-500">Order Date</p>
+                            <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                {order.status}
-                            </span>
-                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.isPaid ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
-                                {order.isPaid ? 'Paid' : 'Payment Pending'}
-                            </span>
+                        <div className="text-right">
+                            <p className="text-gray-500">Order Time</p>
+                            <p className="font-medium">{new Date(order.createdAt).toLocaleTimeString()}</p>
                         </div>
-
-                        <div className="mt-4">
-                            <p className="text-gray-500 font-medium">Payment Details</p>
-                            <div className="flex flex-col mt-1">
-                                <div className="flex items-center">
-                                    <span className="text-gray-600 mr-2">Payment:</span>
-                                    <span className="font-medium">{order.paymentMethod}</span>
-                                </div>
+                    </div>
+                    <div className="mt-4">
+                        <p className="text-gray-500 font-medium">Payment Details</p>
+                        <div className="flex flex-col mt-1">
+                            <div className="flex items-center">
+                                <span className="text-gray-600 mr-2">Payment:</span>
+                                <span className="font-medium">{order.paymentMethod}</span>
+                            </div>
+                            <div className="flex items-center mt-1">
+                                <span className="text-gray-600 mr-2">Fulfillment:</span>
+                                <span className="font-medium">{order.deliveryMethod || 'Delivery'}</span>
+                            </div>
+                            {order.isPaid && order.paidAt && (
                                 <div className="flex items-center mt-1">
-                                    <span className="text-gray-600 mr-2">Fulfillment:</span>
-                                    <span className="font-medium">{order.deliveryMethod || 'Delivery'}</span>
+                                    <span className="text-gray-600 mr-2">Paid on:</span>
+                                    <span className="font-medium">{new Date(order.paidAt).toLocaleDateString()}</span>
                                 </div>
-                                {order.isPaid && order.paidAt && (
-                                    <div className="flex items-center mt-1">
-                                        <span className="text-gray-600 mr-2">Paid on:</span>
-                                        <span className="font-medium">{new Date(order.paidAt).toLocaleDateString()}</span>
-                                    </div>
-                                )}
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -292,7 +291,7 @@ const OrderDetails = () => {
                 )}
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-5">
+            <div className="border border-gray-300 rounded-lg p-5 mb-6">
                 <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Delivery Address</h2>
                 <div className="text-gray-600">
                     <p className="font-medium">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
@@ -304,7 +303,7 @@ const OrderDetails = () => {
                 </div>
             </div>
 
-            <div className="border border-gray-300 rounded-lg p-5">
+            <div className="border border-gray-300 rounded-lg p-5 mb-6">
                 <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Items</h2>
 
                 {order.orderItems.map((item, index) => (
