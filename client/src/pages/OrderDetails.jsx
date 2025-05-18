@@ -208,7 +208,7 @@ const OrderDetails = () => {
             <div className="border border-gray-300 rounded-lg p-5 mb-6">
                 <h2 className="text-xl font-medium border-b border-gray-200 pb-2 mb-4">Order Status</h2>
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0 md:justify-end">
+                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
                         <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
                             {order.status}
                         </span>
@@ -216,19 +216,19 @@ const OrderDetails = () => {
                             {order.isPaid ? 'Paid' : 'Payment Pending'}
                         </span>
                     </div>
-                </div>
-
-                <div>
-                    <div className="flex justify-between items-center mb-4 w-full">
-                        <div className="text-left">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-end mt-4 md:mt-0">
+                        <div className="text-right">
                             <p className="text-gray-500">Order Date</p>
                             <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right mt-1 md:mt-0 md:ml-4">
                             <p className="text-gray-500">Order Time</p>
                             <p className="font-medium">{new Date(order.createdAt).toLocaleTimeString()}</p>
                         </div>
                     </div>
+                </div>
+
+                <div>
                     <div className="mt-4">
                         <p className="text-gray-500 font-medium">Payment Details</p>
                         <div className="flex flex-col mt-1">
