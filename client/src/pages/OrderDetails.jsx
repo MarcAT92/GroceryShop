@@ -197,17 +197,17 @@ const OrderDetails = () => {
             <div className="flex flex-col items-start md:flex-row md:items-center justify-between mb-6">
                 <Link to="/my-orders" className="group cursor-pointer flex items-center gap-2 text-primary font-medium">
                     <img src={assets.arrow_right_icon_colored} alt='arrow' className='group-hover:translate-x-1 transition' />
-                    Back to My Orders
+                    My Orders
                 </Link>
-                <div>
+                <div className="mt-4 md:mt-0">
                     <span className="text-gray-500">Order Number: </span>
                     <span className="font-medium">{order.orderNumber || `#${order._id.substring(order._id.length - 6)}`}</span>
                 </div>
             </div>
 
             <div className="border border-gray-300 rounded-lg p-4 sm:p-5 mb-6">
-                <div className="flex justify-between items-start mb-4">
-                    <div>
+                <div className="flex flex-col md:flex-row md:items-start justify-between mb-4">
+                    <div className="mb-4 md:mb-0">
                         <h2 className="text-xl font-medium">Order Status</h2>
                         <div className="flex flex-wrap gap-2 mt-2">
                             <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
@@ -238,7 +238,7 @@ const OrderDetails = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left md:text-right">
                         <p className="text-gray-500">Order Date</p>
                         <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
                         <p className="text-gray-500 mt-2">Order Time</p>
@@ -248,14 +248,14 @@ const OrderDetails = () => {
 
                 {order.status !== 'Cancelled' && order.canCancel && (
                     <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                        <div className="flex justify-between items-center">
-                            <div>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                            <div className="mb-2 sm:mb-0">
                                 <p className="text-yellow-800 font-medium">Cancellation Window</p>
                                 <p className="text-sm text-yellow-700">
                                     You can cancel this order within 1 hour of placing it.
                                 </p>
                             </div>
-                            <div className="text-right">
+                            <div className="text-left sm:text-right">
                                 <p className="text-sm text-yellow-700">Time remaining:</p>
                                 <p className="font-mono font-medium text-yellow-800">{formatTimeLeft(timeLeft)}</p>
                             </div>
@@ -318,7 +318,7 @@ const OrderDetails = () => {
                                 <p className="text-gray-500">{currency}{item.price.toFixed(2)} each</p>
                             </div>
                         </div>
-                        <div className="text-right md:ml-4">
+                        <div className="text-left md:text-right md:ml-4">
                             <p className="text-gray-500">Subtotal</p>
                             <p className="font-medium">{currency}{item.itemTotal.toFixed(2)}</p>
                         </div>
