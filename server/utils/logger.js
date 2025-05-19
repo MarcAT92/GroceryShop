@@ -1,42 +1,104 @@
 /**
- * Logger utility for consistent server logging
+ * Enhanced logger utility following industry best practices
+ * Features:
+ * - Structured JSON logging
+ * - Log levels with severity
+ * - Error handling with stack traces
+ * - Environment-aware logging
+ * - Request context support
+ * - Backward compatible with existing usage
  */
 
-// Format: [TIMESTAMP] [LEVEL] [SOURCE] - MESSAGE
-const formatLog = (level, source, message) => {
-    const timestamp = new Date().toISOString();
-    return `[${timestamp}] [${level.toUpperCase()}] [${source}] - ${message}`;
+const LOG_LEVELS = {
+    ERROR: 0,
+    WARN: 1,
+    INFO: 2,
+    DEBUG: 3,
+    ADMIN: 4
 };
 
-// Log levels
+const currentLogLevel = process.env.LOG_LEVEL || 
+    (process.env.NODE_ENV === 'production' ? 'INFO' : 'DEBUG');
+
+const shouldLog = (level) => {
+    return LOG_LEVELS[level] <= LOG_LEVELS[currentLogLevel];
+};
+
+const formatLog = (level, source, message, error = null) => {
+    const logEntry = {
+        timestamp: new Date().toISOString(),
+        level: level.toUpperCase(),
+        source,
+        message,
+        ...(process.env.NODE_ENV === 'development' && { pid: process.pid })
+    };
+
+    if (error) {
+        logEntry.error = {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        };
+    }
+
+    return JSON.stringify(logEntry);
+};
+
+// Enhanced logger with structured logging
 export const logger = {
     info: (source, message) => {
-        console.log(formatLog('INFO', source, message));
+        if (shouldLog('INFO')) {
+            console.log(formatLog('INFO', source, message));
+        }
     },
     
     warn: (source, message) => {
-        console.warn(formatLog('WARN', source, message));
+        if (shouldLog('WARN')) {
+            console.warn(formatLog('WARN', source, message));
+        }
     },
     
     error: (source, message, error) => {
-        console.error(formatLog('ERROR', source, message));
-        if (error) {
-            console.error(error);
+        if (shouldLog('ERROR')) {
+            console.error(formatLog('ERROR', source, message, error));
         }
     },
     
     debug: (source, message, data) => {
-        if (process.env.NODE_ENV !== 'production') {
-            console.log(formatLog('DEBUG', source, message));
+        if (shouldLog('DEBUG') && process.env.NODE_ENV !== 'production') {
+            const logData = formatLog('DEBUG', source, message);
+            console.log(logData);
             if (data) {
-                console.log(data);
+                console.log(JSON.stringify({ debugData: data }, null, 2));
             }
         }
     },
     
-    // Special method for admin actions
+    // Enhanced admin logging with structured data
     admin: (adminId, adminEmail, action, details) => {
-        const adminInfo = `Admin[${adminId}][${adminEmail}]`;
-        console.log(formatLog('ADMIN', adminInfo, `${action} - ${details || ''}`));
+        if (shouldLog('ADMIN')) {
+            const adminInfo = {
+                adminId,
+                adminEmail,
+                action,
+                details: details || ''
+            };
+            console.log(formatLog('ADMIN', 'ADMIN_ACTION', JSON.stringify(adminInfo)));
+        }
+    },
+    
+    // New method for request context logging
+    request: (req, res, message) => {
+        if (shouldLog('INFO')) {
+            const requestInfo = {
+                method: req.method,
+                path: req.path,
+                status: res.statusCode,
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                message
+            };
+            console.log(formatLog('INFO', 'REQUEST', JSON.stringify(requestInfo)));
+        }
     }
 };

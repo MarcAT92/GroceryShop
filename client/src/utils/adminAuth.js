@@ -1,72 +1,40 @@
-// Check if admin is logged in
-export const isAdminLoggedIn = () => {
-    // Only run admin auth logic if on an admin route
-    if (!window.location.pathname.startsWith('/admin')) {
-        return false; // Or an appropriate status for non-admin routes
-    }
-
+// Get admin token from localStorage with validation
+export const getAdminToken = () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return null;
+    
+    // Check token expiration before returning
     try {
-        const token = localStorage.getItem('adminToken');
-        console.log('Checking admin login status');
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        if (decoded.exp && decoded.exp < Date.now() / 1000) {
+            removeAdminToken();
+            return null;
+        }
+        return token;
+    } catch {
+        return null;
+    }
+};
 
-        if (!token) return false;
-
-        // Basic validation that token exists and has reasonable length
-        // JWT tokens are typically much longer than 50 characters
-        if (token.length < 10) {
-            console.warn('Admin token appears invalid (too short)');
-            localStorage.removeItem('adminToken'); // Clean up invalid token
+// Check admin login state with token validation
+export const isAdminLoggedIn = () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return false;
+    
+    try {
+        // Verify token expiration without verifying signature (client-side only check)
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        if (decoded.exp && decoded.exp < Date.now() / 1000) {
+            removeAdminToken();
             return false;
         }
-
-        try {
-            // Decode the token (just the payload part)
-            const tokenParts = token.split('.');
-            if (tokenParts.length === 3) {
-                const payload = JSON.parse(atob(tokenParts[1]));
-
-                // Check if token has basic required fields
-                if (!payload.id || !payload.isAdmin) {
-                    console.warn('Token missing required fields');
-                    localStorage.removeItem('adminToken'); // Clean up invalid token
-                    return false;
-                }
-
-                // Check token expiration (exp is in seconds, Date.now() is in milliseconds)
-                if (payload.exp && payload.exp * 1000 < Date.now()) {
-                    console.warn('Admin token has expired');
-                    localStorage.removeItem('adminToken'); // Clean up expired token
-                    return false;
-                }
-            } else {
-                console.warn('Admin token format is invalid (not 3 parts)');
-                localStorage.removeItem('adminToken'); // Clean up invalid token
-                return false;
-            }
-        } catch (e) {
-            console.warn('Could not decode or verify admin token:', e);
-            localStorage.removeItem('adminToken'); // Clean up if decoding fails
-            return false;
-        }
-
         return true;
-    } catch (error) {
-        console.error('Error validating admin token:', error);
+    } catch {
         return false;
     }
 };
 
-// Get admin token
-export const getAdminToken = () => {
-    return localStorage.getItem('adminToken');
-};
-
-// Set admin token
-export const setAdminToken = (token) => {
-    localStorage.setItem('adminToken', token);
-};
-
-// Remove admin token
+// Remove admin token2
 export const removeAdminToken = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminData');

@@ -23,7 +23,7 @@ export const addProduct = async (req, res) => {
         // Upload images to Cloudinary
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
-                let result = await cloudinary.uploader.upload(item.path, {resource_type: 'image'});
+                let result = await cloudinary.uploader.upload(item.path, {resource_type: 'image', folder: 'GroceryShop'});
                 return result.secure_url;
             })
         );
@@ -243,7 +243,7 @@ export const updateProduct = async (req, res) => {
             // Upload new images to Cloudinary
             let newImagesUrl = await Promise.all(
                 images.map(async (item) => {
-                    let result = await cloudinary.uploader.upload(item.path, {resource_type: 'image'});
+                    let result = await cloudinary.uploader.upload(item.path, {resource_type: 'image', folder: 'GroceryShop'});
                     return result.secure_url;
                 })
             );

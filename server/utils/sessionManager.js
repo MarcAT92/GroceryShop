@@ -5,24 +5,21 @@ import { logger } from './logger.js';
 // Key: admin ID, Value: { lastUpdated: timestamp }
 const activeSessions = new Map();
 
-// Add or update an admin session
+// Track admin session during login
 export const trackAdminSession = (adminId, token) => {
     const adminIdStr = adminId.toString();
-
-    // Check if there's a force logout flag before creating a new session
+    
+    // Check for existing force logout flag
     const existingSession = activeSessions.get(adminIdStr);
     const forceLogout = existingSession?.forceLogout || false;
-
-    // Create or update the session
+    
+    // Store minimal session info
     activeSessions.set(adminIdStr, {
         lastUpdated: Date.now(),
-        token,
-        forceLogout // Preserve force logout flag if it exists
+        forceLogout
     });
-
-    logger.debug('SessionManager', `Admin session tracked: ${adminId} (forceLogout: ${forceLogout})`);
-
-    // Return whether this admin should be forced to logout
+    
+    logger.debug('SessionManager', `Admin session tracked during login: ${adminId}`);
     return forceLogout;
 };
 
@@ -36,16 +33,7 @@ export const removeAdminSession = (adminId) => {
     return false;
 };
 
-// Check if an admin session is valid
-export const isSessionValid = (adminId, lastUpdatedTime) => {
-    const adminIdStr = adminId.toString();
-    if (!activeSessions.has(adminIdStr)) {
-        return true; // No tracked session, so consider valid
-    }
 
-    const session = activeSessions.get(adminIdStr);
-    return session.lastUpdated <= lastUpdatedTime;
-};
 
 // Force logout for a specific admin
 export const forceLogoutAdmin = (adminId) => {
