@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { isAdminLoggedIn, adminLogout } from "../utils/adminAuth";
@@ -24,7 +24,7 @@ export const AppContextProvider = ({ children }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Fetch All Products
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       console.log('Fetching products from API...');
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -57,7 +57,7 @@ export const AppContextProvider = ({ children }) => {
       setProducts([]);
       return [];
     }
-  };
+  }, []);
 
   // Admin logout function
   const handleAdminLogout = async () => {

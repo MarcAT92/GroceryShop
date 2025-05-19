@@ -54,7 +54,7 @@ const RefreshButton = ({ onClick, isLoading }) => (
 );
 
 // Separate component for the product table
-const ProductTable = ({ products, currency, onToggleStock, loadingStates, onEditProduct }) => {
+const ProductTable = ({ products, currency, onToggleStock, loadingStates, onEditProduct, onDeleteProduct, deleteLoadingStates }) => {
     // Ensure products is an array to prevent mapping errors
     const safeProducts = Array.isArray(products) ? products : [];
 
@@ -132,6 +132,23 @@ const ProductTable = ({ products, currency, onToggleStock, loadingStates, onEdit
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                         </button>
+                                        <button
+                                            onClick={() => onDeleteProduct(productId)}
+                                            className="text-red-600 hover:text-red-800 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            title="Delete product"
+                                            disabled={deleteLoadingStates[productId]}
+                                        >
+                                            {deleteLoadingStates[productId] ? (
+                                                <svg className="animate-spin h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            ) : (
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            )}
+                                        </button>
                                     </td>
                                 </tr>
                             );
@@ -147,10 +164,13 @@ const ProductList = () => {
     const { products, currency, fetchProducts } = useAppContext();
     const navigate = useNavigate();
     const [loadingStates, setLoadingStates] = useState({});
+    const [deleteLoadingStates, setDeleteLoadingStates] = useState({});
     const [isLoading, setIsLoading] = useState(true); // Start with loading true
     const [error, setError] = useState(null);
     const [productList, setProductList] = useState([]);
     const [lastRefreshed, setLastRefreshed] = useState(null);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
 
     // Function to load products with useCallback for memoization
     const loadProducts = useCallback(async () => {
@@ -193,8 +213,7 @@ const ProductList = () => {
             if (timeoutId) clearTimeout(timeoutId);
             setIsLoading(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);  // Remove fetchProducts from dependencies to prevent infinite loop
+    }, [fetchProducts]);
 
     // Safely update product list when products change
     useEffect(() => {
@@ -205,15 +224,8 @@ const ProductList = () => {
 
     // Fetch products on component mount
     useEffect(() => {
-        // Only load products once on mount
         loadProducts();
-
-        // Cleanup function
-        return () => {
-            // Any cleanup needed when component unmounts
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);  // Empty dependency array to run only on mount
+    }, [loadProducts]);
 
     // Handle stock toggle with useCallback for memoization
     const handleStockToggle = useCallback(async (productId, inStock) => {
@@ -315,8 +327,7 @@ const ProductList = () => {
             // Clear loading state for this product
             setLoadingStates(prev => ({ ...prev, [productId]: false }));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);  // Remove dependencies to prevent infinite loop
+    }, [fetchProducts, loadingStates, navigate]);
 
     // Handle refresh button click with useCallback for memoization
     const handleRefresh = useCallback(async () => {
@@ -329,18 +340,154 @@ const ProductList = () => {
             console.error('Error refreshing products:', error);
             toast.error('Failed to refresh products');
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);  // Remove loadProducts from dependencies to prevent infinite loop
+    }, [loadProducts]);
 
     // Handle edit product button click
     const handleEditProduct = useCallback((productId) => {
         navigate(`/admin/edit-product?id=${productId}`);
     }, [navigate]);
 
+    // Handle delete product button click with useCallback for memoization
+    const handleDeleteProduct = useCallback((productId) => {
+        if (!productId || productId === 'unknown') return;
+        setProductToDelete(productId);
+        setShowDeleteDialog(true);
+    }, []);
 
+    // Handle actual product deletion after confirmation
+    const confirmDelete = useCallback(async () => {
+        if (!productToDelete) return;
+
+        // Prevent multiple clicks by checking if already loading
+        if (deleteLoadingStates[productToDelete]) return;
+
+        // Set loading state for this product
+        setDeleteLoadingStates(prev => ({ ...prev, [productToDelete]: true }));
+
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+            const token = localStorage.getItem('adminToken');
+
+            if (!token) {
+                toast.error('Authentication token not found. Please log in again.');
+                setDeleteLoadingStates(prev => ({ ...prev, [productToDelete]: false }));
+                localStorage.removeItem('adminToken');
+                navigate('/admin/login');
+                return;
+            }
+
+            // Basic token validation
+            if (token.length < 10) {
+                toast.error('Invalid authentication token. Please log in again.');
+                setDeleteLoadingStates(prev => ({ ...prev, [productToDelete]: false }));
+                localStorage.removeItem('adminToken');
+                navigate('/admin/login');
+                return;
+            }
+
+            const response = await fetch(`${apiUrl}/product/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ id: productToDelete })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                toast.success('Product deleted successfully');
+                // Update the product list
+                await fetchProducts();
+            } else {
+                toast.error(data.message || 'Failed to delete product');
+
+                // If unauthorized, redirect to login
+                if (response.status === 401 || response.status === 403 || data.message?.includes('unauthorized') || data.message?.includes('token')) {
+                    // Special handling for credential updates
+                    if (data.code === 'CREDENTIALS_UPDATED') {
+                        toast.error('Your admin credentials have been updated. Please log in again with your new credentials.', {
+                            duration: 8000, // Show for 8 seconds
+                            position: 'top-center',
+                            style: {
+                                background: '#FF4B4B',
+                                color: '#fff',
+                                fontWeight: 'bold',
+                                padding: '16px',
+                                borderRadius: '10px',
+                                fontSize: '16px',
+                                maxWidth: '500px',
+                            },
+                            id: 'credentials-updated', // Prevent duplicate toasts
+                        });
+
+                        // Clear token
+                        localStorage.removeItem('adminToken');
+
+                        // Small delay to ensure toast is visible before refresh
+                        setTimeout(() => {
+                            console.log('Refreshing page after credential update');
+                            window.location.href = '/admin/login'; // Force a full page refresh
+                        }, 1500); // Longer delay to ensure the message is seen
+                    } else {
+                        localStorage.removeItem('adminToken');
+                        navigate('/admin/login');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('An error occurred while deleting the product');
+        } finally {
+            // Clear loading state for this product
+            setDeleteLoadingStates(prev => ({ ...prev, [productToDelete]: false }));
+            // Close the dialog after deletion attempt (success or failure)
+            setShowDeleteDialog(false);
+            setProductToDelete(null);
+        }
+    }, [productToDelete, deleteLoadingStates, navigate, fetchProducts]);
+
+    // Effect to handle body overflow when dialog is open
+    useEffect(() => {
+        if (showDeleteDialog) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cleanup function to reset overflow when component unmounts
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showDeleteDialog]);
 
     return (
         <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll flex flex-col justify-between">
+            {/* Delete Confirmation Dialog */}
+            {showDeleteDialog && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="bg-gray-100 p-6 rounded-lg max-w-md w-full mx-4 shadow-xl border border-gray-300/70">
+                        <h3 className="text-lg font-medium mb-4">Delete Product</h3>
+                        <p className="mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowDeleteDialog(false)} className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Main content */}
             <div className="w-full md:p-6 p-4 max-w-6xl mx-auto">
                 <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
                     <div>
@@ -377,6 +524,8 @@ const ProductList = () => {
                         onToggleStock={handleStockToggle}
                         loadingStates={loadingStates}
                         onEditProduct={handleEditProduct}
+                        onDeleteProduct={handleDeleteProduct}
+                        deleteLoadingStates={deleteLoadingStates}
                     />
                 )}
             </div>

@@ -210,16 +210,6 @@ const AddProducts = () => {
                             <input onChange={(e) => setOfferPrice(e.target.value)} value={offerPrice} id="offer-price" type="number" placeholder="0" className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40" required />
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="inStock"
-                            checked={true} /* Always true for new products */
-                            disabled={true} /* Disabled since it's always true for new products */
-                            className="w-4 h-4"
-                        />
-                        <label htmlFor="inStock" className="text-base font-medium">In Stock</label>
-                    </div>
 
                     <div className="flex gap-3">
                         <button
