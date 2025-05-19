@@ -100,7 +100,7 @@ const AllProduct = () => {
                                 .filter((product) => product.inStock)
                                 .map((product) => (
                                     <ProductCard
-                                        key={product.id}
+                                        key={product._id}
                                         product={product}
                                     />
                                 ))

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { assets, categories } from '../../assets/assets';
+import { categories } from '../../assets/assets';
 import { toast } from 'react-hot-toast';
 import { useAppContext } from '../../context/AppContext';
 import Loader from '../../components/Loader';

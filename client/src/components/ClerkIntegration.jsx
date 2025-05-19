@@ -39,7 +39,7 @@ const ClerkIntegration = () => {
       const data = await response.json();
 
       if (data.success) {
-        console.log('User synced with backend:', data.user);
+        // console.log('User synced with backend:', data.user);
       } else {
         console.error('Failed to sync user with backend:', data.message);
       }
@@ -77,12 +77,12 @@ const ClerkIntegration = () => {
 
       if (data.success) {
         userCart = data.cart || {};
-        console.log('Retrieved user cart from backend:', userCart);
+        // console.log('Retrieved user cart from backend:', userCart);
       }
 
       // If there's a guest cart, merge it with the user's cart
       if (guestCart && Object.keys(guestCart).length > 0) {
-        console.log('Found guest cart to merge:', guestCart);
+        // console.log('Found guest cart to merge:', guestCart);
 
         // Merge the carts - keep the higher quantity for each item
         const mergedCart = { ...userCart };
@@ -125,7 +125,7 @@ const ClerkIntegration = () => {
 
         // Clear the guest cart after merging
         localStorage.removeItem('guestCart');
-        console.log('Merged guest cart with user cart and synced with backend');
+        // console.log('Merged guest cart with user cart and synced with backend');
 
         if (Object.keys(guestCart).length > 0) {
           toast.success('Your cart items have been saved to your account');
@@ -133,7 +133,7 @@ const ClerkIntegration = () => {
       } else {
         // No guest cart to merge, just use the user's cart from backend
         setCartItems(userCart);
-        console.log('Using existing user cart from backend');
+        // console.log('Using existing user cart from backend');
       }
     } catch (error) {
       console.error('Error getting/merging cart from backend:', error);
@@ -147,7 +147,7 @@ const ClerkIntegration = () => {
       // User signed in - sync data with backend
       syncUserWithBackend();
       getCartFromBackend();
-      console.log('User signed in, syncing data with backend');
+      // console.log('User signed in, syncing data with backend');
     } else if (!isSignedIn) {
       // User signed out - clear clerk token and save current cart as guest cart
       localStorage.removeItem('clerkToken');
@@ -155,7 +155,7 @@ const ClerkIntegration = () => {
       // If there are items in the cart, save them to localStorage
       if (Object.keys(cartItems).length > 0) {
         localStorage.setItem('guestCart', JSON.stringify(cartItems));
-        console.log('User signed out, saved cart to localStorage');
+        // console.log('User signed out, saved cart to localStorage');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -170,28 +170,34 @@ const ClerkIntegration = () => {
           const token = await getToken();
           const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
-          // Convert cart format for backend
-          const cartItemsArray = [];
-          for (const productId in cartItems) {
-            cartItemsArray.push({
-              productId,
-              quantity: cartItems[productId]
-            });
-          }
-
-          await fetch(`${apiUrl}/cart/update`, {
-            method: 'PUT',
+          // First, clear the existing cart on the backend
+          await fetch(`${apiUrl}/cart/clear`, {
+            method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({
-              clerkId: user.id,
-              cartItems: cartItemsArray
-            })
+            body: JSON.stringify({ clerkId: user.id })
           });
 
-          console.log('Cart synced with backend on change');
+          // Then, add each item from the local cartItems to the backend cart
+          for (const productId in cartItems) {
+            if (Object.prototype.hasOwnProperty.call(cartItems, productId)) {
+              await fetch(`${apiUrl}/cart/add`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  clerkId: user.id,
+                  productId,
+                  quantity: cartItems[productId]
+                })
+              });
+            }
+          }
+          // console.log('Cart synced with backend on change by clearing and re-adding items');
         } catch (error) {
           console.error('Error syncing cart with backend:', error);
         }
