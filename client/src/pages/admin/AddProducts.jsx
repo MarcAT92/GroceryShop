@@ -5,6 +5,21 @@ import { toast } from 'react-hot-toast';
 import { useAppContext } from '../../context/AppContext';
 import Loader from '../../components/Loader';
 
+// Separate component for the stock toggle switch
+const StockToggle = ({ isInStock, isLoading, onChange }) => (
+    <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+        <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={isInStock}
+            onChange={onChange}
+            disabled={isLoading}
+        />
+        <div className={`w-12 h-7 ${isInStock ? 'bg-blue-600' : 'bg-slate-300'} rounded-full peer transition-colors duration-200`}></div>
+        <span className={`dot absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 ease-in-out ${isInStock ? 'translate-x-5' : ''}`}></span>
+    </label>
+);
+
 const AddProducts = () => {
     const navigate = useNavigate();
     const { fetchProducts } = useAppContext();
@@ -15,6 +30,7 @@ const AddProducts = () => {
     const [price, setPrice] = useState('');
     const [offerPrice, setOfferPrice] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [inStock, setInStock] = useState(true); // Add inStock state
 
     // Parse description into array format
     const parseDescription = (text) => {
@@ -62,7 +78,7 @@ const AddProducts = () => {
                 category,
                 price: parseFloat(parseFloat(price).toFixed(2)),
                 offerPrice: parseFloat(parseFloat(offerPrice).toFixed(2)),
-                inStock: true
+                inStock // Include inStock in productData
             };
 
             formData.append('productData', JSON.stringify(productData));
@@ -199,6 +215,15 @@ const AddProducts = () => {
                                 <option key={index} value={item.path}>{item.path}</option>
                             ))}
                         </select>
+                    </div>
+                    {/* Add In Stock Toggle */}
+                    <div className="flex items-center gap-3">
+                        <label className="text-base font-medium">In Stock</label>
+                        <StockToggle
+                            isInStock={inStock}
+                            isLoading={isLoading}
+                            onChange={() => setInStock(!inStock)}
+                        />
                     </div>
                     <div className="flex items-center gap-5 flex-wrap">
                         <div className="flex-1 flex flex-col gap-1 w-32">
