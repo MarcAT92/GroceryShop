@@ -6,6 +6,16 @@ import { logger } from './logger.js';
 const activeSessions = new Map();
 
 // Track admin session during login
+export const setForceLogout = (adminId) => {
+    const adminIdStr = adminId.toString();
+    const existingSession = activeSessions.get(adminIdStr);
+    if (existingSession) {
+        activeSessions.set(adminIdStr, {
+            ...existingSession,
+            forceLogout: true
+        });
+    }
+};
 export const trackAdminSession = (adminId, token) => {
     const adminIdStr = adminId.toString();
     
