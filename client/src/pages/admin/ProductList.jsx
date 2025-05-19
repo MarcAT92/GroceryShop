@@ -227,6 +227,20 @@ const ProductList = () => {
         loadProducts();
     }, [loadProducts]);
 
+    // Effect to control body overflow when delete dialog is open
+    useEffect(() => {
+        if (showDeleteDialog) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cleanup function to reset overflow when component unmounts
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showDeleteDialog]);
+
     // Handle stock toggle with useCallback for memoization
     const handleStockToggle = useCallback(async (productId, inStock) => {
         if (!productId || productId === 'unknown') return;

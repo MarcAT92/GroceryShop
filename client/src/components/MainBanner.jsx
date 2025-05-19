@@ -12,11 +12,11 @@ const MainBanner = () => {
                 <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-center md:text-left max-w-72 md:max-w-80 lg:max-w-105 leading-tight lg:leading-15 bg-gradient-to-r from-green-600 to-green-900 text-transparent bg-clip-text'>Freshness You Can Trust, Savings You will Love!</h1>
 
                 <div className='flex items-center mt-6 font-medium'>
-                    <Link to={"/products"} className='group flex items-center gap-2 px-7 md:px-9 py-3 bg-primary hover:bg-primary-dull transition rounded text-white cursor-pointer'>
+                    <Link to={"/products"} onClick={() => window.scrollTo(0, 0)} className='group flex items-center gap-2 px-7 md:px-9 py-3 bg-primary hover:bg-primary-dull transition rounded text-white cursor-pointer'>
                         Shop Now
                         <img className='md:hidden transition group-focus:translate-x-1' src={assets.white_arrow_icon} alt='arrow' />
                     </Link>
-                    <Link to={"/products"} className='group hidden md:flex items-center gap-2 px-9 py-3 cursor-pointer'>
+                    <Link to={"/products"} onClick={() => window.scrollTo(0, 0)} className='group hidden md:flex items-center gap-2 px-9 py-3 cursor-pointer'>
                         Explore Deals!
                         <img className='transition group-focus:translate-x-1' src={assets.black_arrow_icon} alt='arrow' />
                     </Link>

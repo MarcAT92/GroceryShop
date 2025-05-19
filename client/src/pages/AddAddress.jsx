@@ -17,6 +17,8 @@ const AddAddress = () => {
     });
     const [editingAddress, setEditingAddress] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [addressToDeleteId, setAddressToDeleteId] = useState(null);
 
     // Fetch addresses when component mounts
     useEffect(() => {
@@ -99,7 +101,14 @@ const AddAddress = () => {
             return;
         }
 
-        if (!confirm('Are you sure you want to delete this address?')) return;
+        // Show custom confirmation dialog
+        setAddressToDeleteId(addressId);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteAddress = async () => {
+        setShowDeleteConfirm(false); // Close the dialog
+        if (!addressToDeleteId) return;
 
         try {
             const token = await getToken();
@@ -112,7 +121,7 @@ const AddAddress = () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    addressId,
+                    addressId: addressToDeleteId,
                     clerkId: userId
                 })
             });
@@ -128,7 +137,14 @@ const AddAddress = () => {
         } catch (error) {
             console.error('Error deleting address:', error);
             toast.error('Error deleting address');
+        } finally {
+            setAddressToDeleteId(null); // Clear the ID
         }
+    };
+
+    const cancelDeleteAddress = () => {
+        setShowDeleteConfirm(false);
+        setAddressToDeleteId(null);
     };
 
     const handleAddressSaved = () => {
@@ -144,8 +160,30 @@ const AddAddress = () => {
 
 
 
+    // Effect to prevent body scrolling when dialog is open
+    useEffect(() => {
+        if (showDeleteConfirm) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cleanup function to reset overflow when component unmounts
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [showDeleteConfirm]);
+
     return (
         <div className='container mx-auto px-4 py-8 max-w-5xl mt-10'>
+            {/* Add a style tag for the no-scroll class */}
+            <style>
+                {`
+                .no-scroll {
+                    overflow: hidden;
+                }
+                `}
+            </style>
             <div className="flex items-center mb-6">
                 <button
                     onClick={() => {
@@ -276,6 +314,30 @@ const AddAddress = () => {
                 </div>
                 <img className='w-full md:w-1/3 h-fit md:mr-16 mb-16 md:mt-0 mx-auto hidden md:block' src={assets.add_address_image} alt='add address' />
             </div>
+
+            {/* Custom Delete Confirmation Dialog */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className=" bg-gray-100 p-6 rounded-lg max-w-md w-full mx-4 shadow-xl border border-gray-300/70">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
+                        <p className="text-gray-600 mb-6">Are you sure you want to delete this address? This action cannot be undone.</p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={cancelDeleteAddress}
+                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDeleteAddress}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
