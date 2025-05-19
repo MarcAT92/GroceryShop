@@ -8,6 +8,7 @@ const AllProduct = () => {
     const {
         products,
         searchQuery,
+        setSearchQuery,
         selectedCategory,
         setSelectedCategory,
         categories
@@ -42,10 +43,14 @@ const AllProduct = () => {
             );
         }
 
-        // Apply search filter
+        // Apply search filter (name, category, or price)
         if (searchQuery && searchQuery.length > 0) {
+            const searchLower = searchQuery.toLowerCase();
             filtered = filtered.filter(product =>
-                product.name.toLowerCase().includes(searchQuery.toLowerCase())
+                product.name.toLowerCase().includes(searchLower) ||
+                product.category.toLowerCase().includes(searchLower) ||
+                product.price.toString().includes(searchLower) ||
+                product.offerPrice.toString().includes(searchLower)
             );
         }
 
@@ -69,8 +74,21 @@ const AllProduct = () => {
                             <div className='w-16 h-0.5 ml-26 bg-primary rounded-full'></div>
                         </div>
 
-                        {/* Category Filter */}
-                        <div className='flex justify-center sm:justify-start w-full sm:w-auto'>
+                        {/* Search and Category Filter */}
+                        <div className='flex flex-col sm:flex-row justify-center sm:justify-start w-full sm:w-auto gap-4'>
+                            {/* Search Input */}
+                            <div className='flex items-center border border-gray-300 text-sm rounded-md px-3 py-1.5 outline-none focus-within:border-primary w-full sm:w-auto'>
+                                <input
+                                    type='text'
+                                    placeholder='Search products...'
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className='flex-grow outline-none bg-transparent'
+                                />
+                                {/* Add a clear button if needed */}
+                            </div>
+
+                            {/* Category Filter */}
                             <div className='flex items-center gap-4'>
                                 <span className='text-gray-600'>Category:</span>
                                 <select
