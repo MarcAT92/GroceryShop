@@ -183,13 +183,13 @@ const AddAddress = () => {
                         </div>
                     ) : (
                         <div className="bg-white p-6 rounded-lg shadow">
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-medium">Your Addresses</h2>
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
+                                <h2 className="text-xl font-semibold text-gray-700">Your Addresses</h2>
                                 <button
                                     onClick={() => setShowForm(true)}
-                                    className="px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2"
+                                    className="px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2 text-sm sm:text-base w-full sm:w-auto justify-center cursor-pointer"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                     </svg>
                                     Add New Address
@@ -203,7 +203,7 @@ const AddAddress = () => {
                                     <p>You don't have any saved addresses yet.</p>
                                     <button
                                         onClick={() => setShowForm(true)}
-                                        className="mt-4 px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2 mx-auto"
+                                        className="mt-4 px-5 py-2.5 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2 mx-auto text-sm sm:text-base cursor-pointer"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -218,8 +218,9 @@ const AddAddress = () => {
                                             key={address._id}
                                             className="border rounded-lg p-4 border-gray-200"
                                         >
-                                            <div className="flex justify-between items-start">
-                                                <div>
+                                            {/* Responsive layout: stack on small screens, row on medium and up */}
+                                            <div className="flex flex-col md:flex-row justify-between md:items-start gap-4 md:gap-2">
+                                                <div className="flex-grow">
                                                     <div className="flex items-center gap-2">
                                                         <h3 className="font-medium">
                                                             {address.firstName} {address.lastName}
@@ -230,27 +231,28 @@ const AddAddress = () => {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-gray-600">{address.phoneNumber}</p>
-                                                    <p className="text-gray-600">{address.addressLine1}</p>
+                                                    <p className="text-gray-600 mb-1.5">{address.phoneNumber}</p>
+                                                    <p className="text-gray-600 mb-1.5">{address.addressLine1}</p>
                                                     {address.addressLine2 && (
-                                                        <p className="text-gray-600">{address.addressLine2}</p>
+                                                        <p className="text-gray-600 mb-1.5">{address.addressLine2}</p>
                                                     )}
-                                                    <p className="text-gray-600">
+                                                    <p className="text-gray-600 mb-1.5">
                                                         {address.city}, {address.state} {address.postalCode}
                                                     </p>
                                                     <p className="text-gray-600">{address.country}</p>
                                                 </div>
-                                                <div className="flex flex-col gap-2">
+                                                {/* Action buttons: stack vertically, align differently on screen sizes */}
+                                                <div className="flex flex-col items-start md:items-end gap-2 mt-3 md:mt-0 flex-shrink-0">
                                                     <button
                                                         onClick={() => handleEditAddress(address)}
-                                                        className="text-sm text-gray-600 hover:underline"
+                                                        className="text-sm text-gray-600 hover:underline py-1 px-2 rounded hover:bg-gray-100 w-full md:w-auto text-left md:text-right cursor-pointer"
                                                     >
                                                         Edit
                                                     </button>
                                                     {!address.isDefault && (
                                                         <button
                                                             onClick={() => handleSetDefault(address._id)}
-                                                            className="text-sm text-gray-600 hover:underline"
+                                                            className="text-sm text-gray-600 hover:underline py-1 px-2 rounded hover:bg-gray-100 w-full md:w-auto text-left md:text-right cursor-pointer"
                                                         >
                                                             Set as Default
                                                         </button>
@@ -258,7 +260,7 @@ const AddAddress = () => {
                                                     {!address.isDefault && (
                                                         <button
                                                             onClick={() => handleDelete(address._id)}
-                                                            className="text-sm text-red-600 hover:underline"
+                                                            className="text-sm text-red-600 hover:underline py-1 px-2 rounded hover:bg-red-50 w-full md:w-auto text-left md:text-right cursor-pointer"
                                                         >
                                                             Delete
                                                         </button>
@@ -272,7 +274,7 @@ const AddAddress = () => {
                         </div>
                     )}
                 </div>
-                <img className='md:w-1/3 h-fit md:mr-16 mb-16 md:mt-0' src={assets.add_address_image} alt='add address' />
+                <img className='w-full md:w-1/3 h-fit md:mr-16 mb-16 md:mt-0 mx-auto hidden md:block' src={assets.add_address_image} alt='add address' />
             </div>
         </div>
     )
